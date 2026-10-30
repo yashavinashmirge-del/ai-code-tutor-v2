@@ -24,3 +24,951 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* =====================================================
+   AI MENTOR — ANIMATION STYLES
+===================================================== */
+
+.ai-mentor {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    min-height: 560px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin: auto;
+    isolation: isolate;
+}
+
+/* Animated glowing aura */
+
+.mentor-aura {
+    position: absolute;
+    width: 330px;
+    height: 330px;
+    bottom: 65px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba(99, 102, 241, 0.28),
+        rgba(139, 92, 246, 0.08) 55%,
+        transparent 72%
+    );
+    filter: blur(22px);
+    animation: mentorGlow 4s ease-in-out infinite;
+    z-index: -1;
+}
+
+/* Character floating movement */
+
+.mentor-figure {
+    position: relative;
+    width: 100%;
+    max-width: 390px;
+    animation: mentorFloat 4s ease-in-out infinite;
+    transform-origin: center bottom;
+}
+
+.mentor-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.2));
+}
+
+/* Speech bubble */
+
+.mentor-speech {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    z-index: 5;
+    min-width: 230px;
+    padding: 16px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+    background: rgba(20, 25, 45, 0.94);
+    color: #fff;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(15px);
+    animation: mentorBubbleIn 0.5s ease both;
+    transform: translateX(-50%);
+}
+
+.mentor-speech::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    width: 15px;
+    height: 15px;
+    background: #14192d;
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.mentor-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #a5b4fc;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.mentor-online {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 10px #4ade80;
+    animation: mentorPulse 1.5s infinite;
+}
+
+.mentor-speech p {
+    margin-top: 9px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* Floating decorative stars */
+
+.mentor-spark {
+    position: absolute;
+    color: #a5b4fc;
+    font-size: 28px;
+    pointer-events: none;
+    animation: mentorSparkle 3s ease-in-out infinite;
+}
+
+.spark-one {
+    top: 35%;
+    left: 5%;
+}
+
+.spark-two {
+    top: 52%;
+    right: 5%;
+    animation-delay: 1s;
+}
+
+.spark-three {
+    top: 15%;
+    right: 12%;
+    animation-delay: 1.7s;
+}
+
+/* Animation keyframes */
+
+@keyframes mentorFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(-1deg);
+    }
+    50% {
+        transform: translateY(-16px) rotate(1deg);
+    }
+}
+
+@keyframes mentorGlow {
+    0%, 100% {
+        transform: scale(0.9);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+@keyframes mentorBubbleIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 12px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+}
+
+@keyframes mentorPulse {
+    50% {
+        opacity: 0.4;
+    }
+}
+
+@keyframes mentorSparkle {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translateY(-15px) rotate(20deg);
+        opacity: 1;
+    }
+}
+
+/* Responsive design */
+
+@media (max-width: 640px) {
+    .ai-mentor {
+        min-height: 390px;
+        max-width: 300px;
+    }
+
+    .mentor-figure {
+        max-width: 250px;
+    }
+
+    .mentor-aura {
+        width: 240px;
+        height: 240px;
+    }
+
+    .mentor-speech {
+        top: 5px;
+        min-width: 210px;
+    }
+}
+
+/* Accessibility: respect reduced-motion preference */
+
+@media (prefers-reduced-motion: reduce) {
+    .mentor-figure,
+    .mentor-aura,
+    .mentor-speech,
+    .mentor-spark,
+    .mentor-online {
+        animation: none !important;
+    }
+}
+
+/* =====================================================
+   AI MENTOR SLIDESHOW
+   ===================================================== */
+
+
+/* =====================================================
+   AI MENTOR SLIDESHOW - COMPLETE STYLING
+   ===================================================== */
+
+.mentor-slideshow {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto 0;
+    padding: 12px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.mentor-slideshow * {
+    box-sizing: border-box;
+}
+
+/* Main slide */
+.mentor-slide-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    animation: mentorSlideEnter 0.65s ease both;
+}
+
+/* Mentor status */
+.mentor-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 9px 15px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 30px;
+    background: rgba(139, 92, 246, 0.12);
+    color: #c4b5fd;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.mentor-status-dot {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 12px #34d399;
+    animation: mentorPulse 1.5s infinite;
+}
+
+/* Message bubble */
+.mentor-message {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 350px;
+    margin: 18px auto 0;
+    padding: 16px 20px;
+    border: 1px solid rgba(167, 139, 250, 0.25);
+    border-radius: 16px;
+    background: rgba(30, 27, 75, 0.85);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.mentor-message-icon {
+    display: block;
+    color: #a78bfa;
+    font-size: 20px;
+}
+
+.mentor-message h2 {
+    margin: 7px 0 0;
+    color: #ffffff;
+    font-size: clamp(20px, 2.2vw, 26px);
+    font-weight: 750;
+    letter-spacing: -0.7px;
+}
+
+.mentor-message p {
+    margin: 7px 0 0;
+    color: #a5b4fc;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* Character container */
+.mentor-character {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 220px;
+    margin: 8px auto 0;
+    overflow: hidden;
+}
+
+.mentor-character img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 200px;
+    height: 200px;
+    max-width: 100%;
+    object-fit: contain;
+    animation: mentorCharacterFloat 4s ease-in-out infinite;
+    filter: drop-shadow(0 15px 30px rgba(139, 92, 246, 0.2));
+}
+
+/* Character background glow */
+.mentor-character-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba(139, 92, 246, 0.32),
+        transparent 70%
+    );
+    filter: blur(15px);
+    transform: translate(-50%, -50%);
+    animation: mentorGlow 4s ease-in-out infinite;
+}
+
+/* Floating decorations */
+.mentor-floating-star {
+    position: absolute;
+    z-index: 2;
+    color: #c4b5fd;
+    animation: mentorStarFloat 3s ease-in-out infinite;
+}
+
+.star-one {
+    top: 25px;
+    left: 20%;
+    font-size: 23px;
+}
+
+.star-two {
+    top: 65px;
+    right: 17%;
+    font-size: 30px;
+    animation-delay: 0.8s;
+}
+
+.star-three {
+    bottom: 25px;
+    left: 25%;
+    font-size: 17px;
+    animation-delay: 1.4s;
+}
+
+/* Slide counter */
+.mentor-slide-number {
+    display: block;
+    margin: 4px auto 0;
+    color: #a5b4fc;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    line-height: 1.5;
+}
+
+/* Navigation row */
+.mentor-navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    width: 100%;
+    margin: 14px auto 0;
+}
+
+/* Previous and next buttons */
+.mentor-navigation > button {
+    display: inline-flex;
+    flex: 0 0 36px;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    padding: 0;
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: 50%;
+    background: rgba(139, 92, 246, 0.12);
+    color: #ddd6fe;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.mentor-navigation > button:hover {
+    background: #7c3aed;
+    transform: scale(1.1);
+}
+
+/* Slide indicators */
+.mentor-dots {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.mentor-dots .mentor-dot {
+    display: block;
+    flex: 0 0 7px;
+    width: 7px;
+    height: 7px;
+    min-width: 7px;
+    min-height: 7px;
+    padding: 0;
+    border: none;
+    border-radius: 20px;
+    background: #4b5563;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mentor-dots .mentor-dot.active {
+    flex-basis: 24px;
+    width: 24px;
+    background: #a78bfa;
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+}
+
+/* Animations */
+@keyframes mentorSlideEnter {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes mentorCharacterFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes mentorGlow {
+    0%, 100% {
+        opacity: 0.6;
+        scale: 0.9;
+    }
+
+    50% {
+        opacity: 1;
+        scale: 1.15;
+    }
+}
+
+@keyframes mentorStarFloat {
+    0%, 100% {
+        translate: 0 0;
+    }
+
+    50% {
+        translate: 0 -12px;
+    }
+}
+
+@keyframes mentorPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(0.8);
+    }
+}
+
+/* Tablet and mobile */
+@media (max-width: 768px) {
+    .mentor-slideshow {
+        max-width: 440px;
+        margin-top: 15px;
+    }
+
+    .mentor-character {
+        height: 190px;
+    }
+
+    .mentor-character img {
+        width: 175px;
+        height: 175px;
+    }
+
+    .mentor-character-glow {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mentor-message {
+        max-width: 310px;
+        padding: 14px;
+    }
+
+    .mentor-character {
+        height: 175px;
+    }
+
+    .mentor-character img {
+        width: 160px;
+        height: 160px;
+    }
+
+    .mentor-navigation {
+        gap: 16px;
+    }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .mentor-slide-content,
+    .mentor-character img,
+    .mentor-character-glow,
+    .mentor-floating-star,
+    .mentor-status-dot {
+        animation: none !important;
+    }
+}
+
+
+/* =========================================================
+   AI CODE TUTOR - INTERACTIVE CODING ANIMATION
+========================================================= */
+
+.coding-animation {
+    width: 100%;
+    max-width: 650px;
+    overflow: hidden;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 16px;
+    background: #0b1020;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+}
+
+/* Editor header */
+
+.coding-titlebar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 16px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    background: #11182b;
+}
+
+.coding-window-controls {
+    display: flex;
+    gap: 7px;
+}
+
+.window-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.window-dot.red { background: #ff5f57; }
+.window-dot.yellow { background: #febc2e; }
+.window-dot.green { background: #28c840; }
+
+.coding-file-name {
+    color: #dbeafe;
+    font-size: 12px;
+    text-align: center;
+}
+
+.coding-language {
+    color: #93c5fd;
+    font-size: 11px;
+    text-align: right;
+}
+
+/* Code editor */
+
+.coding-editor {
+    display: flex;
+    min-height: 245px;
+    padding: 17px 0;
+    overflow-x: auto;
+    background: #0b1020;
+}
+
+.coding-line-numbers {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    padding: 0 15px;
+    border-right: 1px solid rgba(255,255,255,.06);
+    color: #526079;
+    font-family: monospace;
+    font-size: 11px;
+    line-height: 1.9;
+    text-align: right;
+}
+
+.coding-line-numbers span {
+    height: 21px;
+}
+
+.coding-line-numbers .active-line-number {
+    color: #c4b5fd;
+}
+
+.coding-code {
+    flex: 1;
+    min-width: 0;
+    padding: 0 12px;
+    font-family: monospace;
+    font-size: 11px;
+    line-height: 1.9;
+}
+
+.code-line {
+    position: relative;
+    min-width: max-content;
+    height: 21px;
+    padding: 0 9px;
+    border-radius: 5px;
+    color: #cbd5e1;
+    white-space: pre;
+}
+
+.code-line:first-child {
+    color: #94a3b8;
+}
+
+.code-line.active-code-line {
+    background: rgba(99,102,241,.23);
+    box-shadow: inset 2px 0 #a78bfa;
+    color: #ffffff;
+}
+
+.execution-indicator {
+    margin-left: 10px;
+    color: #a78bfa;
+    animation: indicatorPulse 1s infinite;
+}
+
+/* Execution panel */
+
+.execution-panel {
+    padding: 18px;
+    border-top: 1px solid rgba(255,255,255,.08);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    background: linear-gradient(135deg,#111b34,#10162a);
+}
+
+.execution-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.execution-header h3 {
+    margin: 0;
+    color: #e2e8f0;
+    font-size: 12px;
+}
+
+.execution-header h3 span {
+    margin-right: 6px;
+    color: #a78bfa;
+}
+
+.execution-badge {
+    padding: 5px 9px;
+    border-radius: 6px;
+    background: rgba(34,197,94,.12);
+    color: #4ade80;
+    font-size: 9px;
+}
+
+/* Array visualization */
+
+.array-label {
+    margin-bottom: 13px;
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.array-grid {
+    display: grid;
+    grid-template-columns: repeat(4,minmax(0,1fr));
+    gap: 9px;
+}
+
+.array-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 9px;
+    background: rgba(255,255,255,.035);
+    transition: background .3s,border-color .3s,transform .3s;
+}
+
+.array-index {
+    color: #8291aa;
+    font-size: 9px;
+}
+
+.array-value {
+    display: grid;
+    width: 100%;
+    min-height: 37px;
+    place-items: center;
+    border-radius: 6px;
+    background: rgba(148,163,184,.1);
+    color: #f8fafc;
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.array-item.current-item {
+    transform: translateY(-3px);
+    border-color: #60a5fa;
+    background: rgba(59,130,246,.12);
+}
+
+.array-item.largest-item .array-value {
+    background: rgba(16,185,129,.2);
+    color: #6ee7b7;
+}
+
+/* Variable cards */
+
+.variable-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.variable-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 5px;
+    padding: 11px;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 8px;
+    background: rgba(255,255,255,.035);
+}
+
+.variable-card > span:first-child {
+    grid-column: 1 / -1;
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+.variable-card strong {
+    color: #c4b5fd;
+    font-size: 11px;
+}
+
+.variable-value {
+    color: #4ade80;
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Execution message */
+
+.execution-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    color: #a5b4fc;
+    font-size: 10px;
+}
+
+.execution-message-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 9px #4ade80;
+}
+
+/* Terminal */
+
+.coding-terminal {
+    padding: 14px 18px;
+    background: #080d19;
+}
+
+.terminal-heading {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.terminal-status {
+    color: #4ade80;
+    font-size: 9px;
+}
+
+.terminal-content {
+    font-family: monospace;
+    font-size: 10px;
+    line-height: 1.8;
+}
+
+.terminal-content p {
+    margin: 0 0 3px;
+    color: #cbd5e1;
+}
+
+.terminal-prompt {
+    color: #a78bfa;
+}
+
+.terminal-result,
+.terminal-success {
+    color: #4ade80 !important;
+}
+
+.terminal-waiting {
+    color: #64748b !important;
+}
+
+/* Replay button */
+
+.replay-button {
+    margin-top: 10px;
+    padding: 6px 10px;
+    border: 1px solid rgba(167,139,250,.25);
+    border-radius: 6px;
+    background: rgba(139,92,246,.1);
+    color: #c4b5fd;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.replay-button:hover {
+    background: rgba(139,92,246,.22);
+}
+
+/* Animation keyframes */
+
+@keyframes indicatorPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .35; }
+}
+
+/* Mobile responsiveness */
+
+@media (max-width: 600px) {
+    .coding-editor {
+        min-height: 220px;
+    }
+
+    .coding-code,
+    .coding-line-numbers {
+        font-size: 9px;
+    }
+
+    .execution-panel {
+        padding: 13px;
+    }
+
+    .array-grid {
+        gap: 5px;
+    }
+
+    .coding-terminal {
+        padding: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .execution-indicator {
+        animation: none;
+    }
+
+    .array-item {
+        transition: none;
+    }
+}
