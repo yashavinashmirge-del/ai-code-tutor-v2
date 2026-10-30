@@ -3,17 +3,25 @@
 //
 // Project Name : AI Code Tutor & Analyzer
 // File Name    : page.tsx
-// Module       : User Registration Page
-// Description  : Provides a professional signup page with
-//                email/password registration, Google and
-//                GitHub authentication, and an animated
-//                AI mentor slideshow.
+// Module       : User Registration
+//
+// Description  : Provides the signup interface for new
+//                CodeTutor users.
+//
+// Main Features:
+//                1. User registration with email/password
+//                2. Google authentication
+//                3. GitHub authentication
+//                4. Password visibility controls
+//                5. Password confirmation validation
+//                6. Animated AI Mentor slideshow
+//                7. Responsive registration layout
 //
 ////////////////////////////////////////////////////////////
 
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
 
 import AIMentorSlideshow from "@/components/AIMentorSlideshow";
@@ -21,43 +29,52 @@ import { authClient } from "@/lib/auth-client";
 
 export default function SignupPage() {
 
-    // Store the registration form values.
+    // =====================================================
+    // SECTION 1: FORM STATE
+    // Stores the values entered by the user.
+    // =====================================================
+
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    // Store password visibility.
+    // Controls password visibility independently.
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // Store loading and error states.
+    // Tracks form submission and error messages.
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    // Handle email and password registration.
-    const handleSignup = async (
-        event: React.FormEvent<HTMLFormElement>
-    ) => {
+    // =====================================================
+    // SECTION 2: EMAIL SIGNUP
+    // Registers a new user using Better Auth.
+    // =====================================================
+
+    const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
 
         event.preventDefault();
+
         setError("");
 
-        // Check whether passwords match.
+        // Validate that both password fields match.
         if (password !== confirmPassword) {
             setError("Passwords do not match.");
             return;
         }
 
-        // Validate minimum password length.
+        // Require a minimum password length.
         if (password.length < 8) {
             setError("Password must contain at least 8 characters.");
             return;
         }
 
         try {
+
             setLoading(true);
 
+            // Send registration details to Better Auth.
             const result = await authClient.signUp.email({
                 name,
                 email,
@@ -65,23 +82,33 @@ export default function SignupPage() {
                 callbackURL: "/dashboard",
             });
 
+            // Display authentication errors.
             if (result.error) {
-                setError(result.error.message || "Unable to create account.");
+                setError(result.error.message || "Unable to create your account.");
             }
 
         } catch {
+
             setError("Something went wrong. Please try again.");
+
         } finally {
+
             setLoading(false);
+
         }
     };
 
-    // Handle Google and GitHub social authentication.
+    // =====================================================
+    // SECTION 3: SOCIAL SIGNUP
+    // Supports Google and GitHub authentication.
+    // =====================================================
+
     const handleSocialSignup = async (
         provider: "google" | "github"
     ) => {
 
         try {
+
             setError("");
             setLoading(true);
 
@@ -91,118 +118,126 @@ export default function SignupPage() {
             });
 
         } catch {
-            setError(`${provider} authentication failed.`);
+
+            setError(
+                `Unable to continue with ${provider}. Please try again.`
+            );
+
             setLoading(false);
+
         }
     };
+
+    // =====================================================
+    // SECTION 4: PAGE UI
+    // Displays the promotional panel and signup form.
+    // =====================================================
 
     return (
         <main className="signup-page">
 
-            {/* =========================================
-                LEFT SECTION - BRAND AND AI MENTOR
-            ========================================= */}
+            {/* =============================================
+                LEFT PANEL: BRAND AND AI MENTOR
+            ============================================= */}
 
-            <section className="welcome-section">
+            <section className="signup-left">
 
-                <div className="welcome-background">
-                    <div className="background-orb orb-one" />
-                    <div className="background-orb orb-two" />
-                    <div className="background-grid" />
-                </div>
+                {/* Brand header */}
+                <Link href="/" className="signup-brand">
 
-                <div className="welcome-top">
+                    <span className="signup-brand-icon">
+                        <span>⌘</span>
+                    </span>
 
-                    {/* Application branding */}
-                    <Link href="/" className="brand">
+                    <span className="signup-brand-text">
+                        <strong>CodeTutor</strong>
+                        <small>Learn. Build. Understand.</small>
+                    </span>
 
-                        <span className="brand-icon">✦</span>
+                </Link>
 
-                        <span className="brand-name">
-                            Code<span>Tutor</span>
-                        </span>
 
-                    </Link>
+                {/* Decorative background effects */}
+                <div className="signup-glow signup-glow-one" />
+                <div className="signup-glow signup-glow-two" />
 
-                    {/* Welcome content */}
-                    <div className="welcome-content">
 
-                        <div className="welcome-badge">
-                            <span className="badge-dot" />
-                            YOUR AI-POWERED CODING COMPANION
+                {/* Promotional introduction */}
+                <div className="signup-intro">
+
+                    <div className="signup-eyebrow">
+                        <span className="online-indicator" />
+                        YOUR AI-POWERED CODING COMPANION
+                    </div>
+
+                    <h1>
+                        Don't just write code.
+                        <span> Understand it.</span>
+                    </h1>
+
+                    <p>
+                        Learn programming, understand complex logic,
+                        debug errors and visualize algorithms with
+                        your personal AI coding tutor.
+                    </p>
+
+                    {/* Main platform benefits */}
+                    <div className="signup-benefits">
+
+                        <div>
+                            <span>✦</span>
+                            Learn step by step
                         </div>
 
-                        <h1>
-                            Don't just write code.
-                            <span> Understand it.</span>
-                        </h1>
+                        <div>
+                            <span>⌘</span>
+                            Debug intelligently
+                        </div>
 
-                        <p className="welcome-description">
-                            Learn programming, understand complex logic,
-                            debug errors and visualize algorithms with
-                            your personal AI coding tutor.
-                        </p>
-
-                        {/* Platform highlights */}
-                        <div className="platform-highlights">
-
-                            <div className="highlight-item">
-                                <span className="highlight-icon">✧</span>
-                                <span>Learn step by step</span>
-                            </div>
-
-                            <div className="highlight-item">
-                                <span className="highlight-icon">⌘</span>
-                                <span>Debug intelligently</span>
-                            </div>
-
-                            <div className="highlight-item">
-                                <span className="highlight-icon">◈</span>
-                                <span>Visualize algorithms</span>
-                            </div>
-
+                        <div>
+                            <span>◈</span>
+                            Visualize algorithms
                         </div>
 
                     </div>
 
                 </div>
 
-                {/* Animated AI mentor slideshow */}
-                <div className="mentor-wrapper">
+
+                {/* AI Mentor slideshow */}
+                <div className="signup-mentor-wrapper">
+
                     <AIMentorSlideshow />
+
                 </div>
 
-                {/* Footer */}
-                <footer className="welcome-footer">
+
+                {/* Left panel footer */}
+                <div className="signup-left-footer">
+
                     <span>© 2026 CodeTutor</span>
+
                     <span>Learn. Build. Understand.</span>
-                </footer>
+
+                </div>
 
             </section>
 
 
-            {/* =========================================
-                RIGHT SECTION - SIGNUP FORM
-            ========================================= */}
+            {/* =============================================
+                RIGHT PANEL: REGISTRATION FORM
+            ============================================= */}
 
-            <section className="form-section">
+            <section className="signup-right">
 
-                <div className="form-container">
-
-                    {/* Mobile branding */}
-                    <Link href="/" className="mobile-brand">
-                        <span className="brand-icon">✦</span>
-                        <span className="brand-name">
-                            Code<span>Tutor</span>
-                        </span>
-                    </Link>
+                <div className="signup-form-container">
 
                     {/* Form heading */}
                     <div className="form-heading">
 
-                        <div className="form-eyebrow">
-                            START YOUR JOURNEY
-                        </div>
+                        <span className="form-label">
+                            GET STARTED TODAY
+                        </span>
 
                         <h2>Create your account</h2>
 
@@ -213,31 +248,27 @@ export default function SignupPage() {
                     </div>
 
 
-                    {/* Error message */}
-                    {error && (
-                        <div className="error-message" role="alert">
-                            <span>!</span>
-                            {error}
-                        </div>
-                    )}
-
-
                     {/* Registration form */}
-                    <form onSubmit={handleSignup}>
+                    <form
+                        className="signup-form"
+                        onSubmit={handleSignup}
+                    >
 
-                        {/* Full name */}
+                        {/* Full name field */}
                         <div className="form-group">
 
-                            <label htmlFor="name">
+                            <label htmlFor="signup-name">
                                 Full name
                             </label>
 
                             <div className="input-wrapper">
 
-                                <span className="input-icon">♙</span>
+                                <span className="input-icon">
+                                    ♙
+                                </span>
 
                                 <input
-                                    id="name"
+                                    id="signup-name"
                                     type="text"
                                     placeholder="Enter your full name"
                                     value={name}
@@ -246,6 +277,7 @@ export default function SignupPage() {
                                     }
                                     autoComplete="name"
                                     required
+                                    disabled={loading}
                                 />
 
                             </div>
@@ -253,19 +285,21 @@ export default function SignupPage() {
                         </div>
 
 
-                        {/* Email address */}
+                        {/* Email field */}
                         <div className="form-group">
 
-                            <label htmlFor="email">
+                            <label htmlFor="signup-email">
                                 Email address
                             </label>
 
                             <div className="input-wrapper">
 
-                                <span className="input-icon">✉</span>
+                                <span className="input-icon">
+                                    ✉
+                                </span>
 
                                 <input
-                                    id="email"
+                                    id="signup-email"
                                     type="email"
                                     placeholder="you@example.com"
                                     value={email}
@@ -274,6 +308,7 @@ export default function SignupPage() {
                                     }
                                     autoComplete="email"
                                     required
+                                    disabled={loading}
                                 />
 
                             </div>
@@ -281,19 +316,21 @@ export default function SignupPage() {
                         </div>
 
 
-                        {/* Password */}
+                        {/* Password field */}
                         <div className="form-group">
 
-                            <label htmlFor="password">
+                            <label htmlFor="signup-password">
                                 Password
                             </label>
 
                             <div className="input-wrapper">
 
-                                <span className="input-icon">♧</span>
+                                <span className="input-icon">
+                                    ♧
+                                </span>
 
                                 <input
-                                    id="password"
+                                    id="signup-password"
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Create a strong password"
                                     value={password}
@@ -303,6 +340,7 @@ export default function SignupPage() {
                                     autoComplete="new-password"
                                     minLength={8}
                                     required
+                                    disabled={loading}
                                 />
 
                                 <button
@@ -322,22 +360,28 @@ export default function SignupPage() {
 
                             </div>
 
+                            <span className="field-hint">
+                                Use at least 8 characters.
+                            </span>
+
                         </div>
 
 
-                        {/* Confirm password */}
+                        {/* Confirm password field */}
                         <div className="form-group">
 
-                            <label htmlFor="confirmPassword">
+                            <label htmlFor="signup-confirm-password">
                                 Confirm password
                             </label>
 
                             <div className="input-wrapper">
 
-                                <span className="input-icon">♧</span>
+                                <span className="input-icon">
+                                    ♧
+                                </span>
 
                                 <input
-                                    id="confirmPassword"
+                                    id="signup-confirm-password"
                                     type={
                                         showConfirmPassword
                                             ? "text"
@@ -350,6 +394,7 @@ export default function SignupPage() {
                                     }
                                     autoComplete="new-password"
                                     required
+                                    disabled={loading}
                                 />
 
                                 <button
@@ -362,8 +407,8 @@ export default function SignupPage() {
                                     }
                                     aria-label={
                                         showConfirmPassword
-                                            ? "Hide password"
-                                            : "Show password"
+                                            ? "Hide confirm password"
+                                            : "Show confirm password"
                                     }
                                 >
                                     {showConfirmPassword ? "Hide" : "Show"}
@@ -374,10 +419,21 @@ export default function SignupPage() {
                         </div>
 
 
+                        {/* Authentication error message */}
+                        {error && (
+
+                            <div className="signup-error" role="alert">
+                                <span>!</span>
+                                {error}
+                            </div>
+
+                        )}
+
+
                         {/* Create account button */}
                         <button
                             type="submit"
-                            className="signup-button"
+                            className="signup-submit"
                             disabled={loading}
                         >
 
@@ -398,61 +454,82 @@ export default function SignupPage() {
                     </form>
 
 
-                    {/* Divider */}
-                    <div className="form-divider">
+                    {/* Social authentication separator */}
+                    <div className="social-divider">
                         <span />
                         <p>OR CONTINUE WITH</p>
                         <span />
                     </div>
 
 
-                    {/* Social authentication */}
+                    {/* Google and GitHub signup */}
                     <div className="social-buttons">
 
                         <button
                             type="button"
                             className="social-button"
-                            disabled={loading}
                             onClick={() => handleSocialSignup("google")}
+                            disabled={loading}
                         >
+
                             <span className="google-icon">G</span>
                             Google
+
                         </button>
 
                         <button
                             type="button"
                             className="social-button"
-                            disabled={loading}
                             onClick={() => handleSocialSignup("github")}
+                            disabled={loading}
                         >
+
                             <svg
+                                viewBox="0 0 24 24"
                                 width="19"
                                 height="19"
-                                viewBox="0 0 24 24"
                                 fill="currentColor"
                                 aria-hidden="true"
                             >
-                                <path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.56.1.76-.24.76-.54v-2.1c-3.1.68-3.76-1.32-3.76-1.32-.51-1.3-1.24-1.65-1.24-1.65-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15.99 1.7 2.6 1.21 3.23.92.1-.72.39-1.21.71-1.49-2.48-.28-5.09-1.24-5.09-5.52 0-1.22.44-2.21 1.15-2.99-.12-.28-.5-1.42.11-2.95 0 0 .94-.3 3.05 1.14a10.6 10.6 0 0 1 5.55 0c2.11-1.44 3.05-1.14 3.05-1.14.61 1.53.23 2.67.11 2.95.72.78 1.15 1.77 1.15 2.99 0 4.29-2.61 5.23-5.1 5.51.4.35.76 1.02.76 2.06v3.07c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z" />
+                                <path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.56.1.76-.24.76-.54v-2.1c-3.1.67-3.76-1.32-3.76-1.32-.5-1.29-1.23-1.63-1.23-1.63-1.01-.69.08-.68.08-.68 1.12.08 1.7 1.15 1.7 1.15.99 1.69 2.6 1.2 3.23.91.1-.72.39-1.2.7-1.48-2.48-.28-5.09-1.24-5.09-5.53 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.06 1.15a10.6 10.6 0 0 1 5.57 0c2.12-1.45 3.06-1.15 3.06-1.15.61 1.54.23 2.68.11 2.96.72.78 1.15 1.78 1.15 3 0 4.3-2.61 5.25-5.1 5.53.4.35.75 1.03.75 2.08v3.08c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z" />
                             </svg>
+
                             GitHub
+
                         </button>
 
                     </div>
 
 
-                    {/* Login link */}
-                    <p className="login-prompt">
+                    {/* Existing account navigation */}
+                    <div className="login-prompt">
+
                         Already have an account?
-                        <Link href="/login">Sign in</Link>
-                    </p>
+
+                        <Link href="/login">
+                            Sign in
+                        </Link>
+
+                    </div>
 
 
-                    {/* Terms */}
-                    <p className="terms-text">
+                    {/* Terms and privacy information */}
+                    <p className="signup-terms">
+
                         By creating an account, you agree to our
-                        <Link href="/terms"> Terms of Service </Link>
-                        and
-                        <Link href="/privacy"> Privacy Policy</Link>.
+
+                        {" "}
+
+                        <Link href="/terms">
+                            Terms of Service
+                        </Link>
+
+                        {" "}and{" "}
+
+                        <Link href="/privacy">
+                            Privacy Policy
+                        </Link>.
+
                     </p>
 
                 </div>
@@ -460,468 +537,428 @@ export default function SignupPage() {
             </section>
 
 
-            {/* =========================================
+            {/* =============================================
                 PAGE STYLES
-            ========================================= */}
+                Controls the two-column layout, mentor panel,
+                registration form, buttons and responsiveness.
+            ============================================= */}
 
             <style jsx>{`
 
                 /* Main page layout */
-
                 .signup-page {
-                    min-height: 100vh;
                     display: grid;
-                    grid-template-columns: 1fr 0.85fr;
-                    background: #080b18;
+                    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+                    min-height: 100vh;
+                    background: #090d1b;
                     color: #f8fafc;
-                    font-family: Arial, Helvetica, sans-serif;
                 }
 
-                /* LEFT WELCOME SECTION */
-
-                .welcome-section {
+                /* Left promotional panel */
+                .signup-left {
                     position: relative;
-                    min-height: 100vh;
                     display: flex;
                     flex-direction: column;
-                    justify-content: space-between;
+                    min-width: 0;
+                    min-height: 100vh;
                     overflow: hidden;
-                    padding: 38px 7%;
+                    padding: 30px 7% 20px;
+                    border-right: 1px solid rgba(255,255,255,.06);
                     background:
-                        linear-gradient(
-                            145deg,
-                            #10132b 0%,
-                            #11102b 50%,
-                            #17113b 100%
-                        );
-                    border-right: 1px solid rgba(255,255,255,0.06);
-                }
-
-                .welcome-background {
-                    position: absolute;
-                    inset: 0;
-                    overflow: hidden;
-                    pointer-events: none;
-                }
-
-                .background-grid {
-                    position: absolute;
-                    inset: 0;
-                    opacity: 0.12;
-                    background-image:
-                        linear-gradient(
-                            rgba(167,139,250,0.12) 1px,
-                            transparent 1px
+                        radial-gradient(
+                            circle at 15% 20%,
+                            rgba(91,49,174,.25),
+                            transparent 45%
                         ),
-                        linear-gradient(
-                            90deg,
-                            rgba(167,139,250,0.12) 1px,
-                            transparent 1px
-                        );
-                    background-size: 45px 45px;
-                    mask-image: linear-gradient(
-                        to bottom,
-                        black,
-                        transparent 85%
-                    );
+                        linear-gradient(145deg,#17132f,#10132a 75%,#15123a);
+                    isolation: isolate;
                 }
 
-                .background-orb {
-                    position: absolute;
-                    border-radius: 50%;
-                    filter: blur(90px);
-                    opacity: 0.18;
-                }
-
-                .orb-one {
-                    width: 400px;
-                    height: 400px;
-                    top: -180px;
-                    left: -100px;
-                    background: #7c3aed;
-                }
-
-                .orb-two {
-                    width: 350px;
-                    height: 350px;
-                    right: -160px;
-                    bottom: 0;
-                    background: #4f46e5;
-                }
-
-                .welcome-top,
-                .mentor-wrapper,
-                .welcome-footer {
+                /* Brand */
+                .signup-brand {
                     position: relative;
-                    z-index: 1;
-                }
-
-                /* BRAND */
-
-                .brand,
-                .mobile-brand {
+                    z-index: 2;
                     display: inline-flex;
                     align-items: center;
-                    gap: 11px;
+                    gap: 12px;
                     width: fit-content;
-                    color: white;
+                    color: #fff;
                     text-decoration: none;
                 }
 
-                .brand-icon {
-                    width: 39px;
-                    height: 39px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 12px;
-                    background: linear-gradient(
-                        135deg,
-                        #8b5cf6,
-                        #6366f1
-                    );
-                    color: white;
-                    font-size: 24px;
-                    box-shadow: 0 5px 25px rgba(124,58,237,0.3);
+                .signup-brand-icon {
+                    display: grid;
+                    width: 43px;
+                    height: 43px;
+                    place-items: center;
+                    border-radius: 13px;
+                    background: linear-gradient(135deg,#8b5cf6,#4f46e5);
+                    box-shadow: 0 8px 25px rgba(124,58,237,.3);
                 }
 
-                .brand-name {
-                    font-size: 23px;
+                .signup-brand-icon span {
+                    font-size: 22px;
                     font-weight: 800;
-                    letter-spacing: -1px;
                 }
 
-                .brand-name span {
-                    color: #a78bfa;
+                .signup-brand-text {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 3px;
                 }
 
-                /* WELCOME CONTENT */
-
-                .welcome-content {
-                    max-width: 570px;
-                    margin-top: 75px;
+                .signup-brand-text strong {
+                    font-size: 17px;
                 }
 
-                .welcome-badge {
+                .signup-brand-text small {
+                    color: #9ba7c0;
+                    font-size: 10px;
+                }
+
+                /* Decorative glow effects */
+                .signup-glow {
+                    position: absolute;
+                    z-index: -1;
+                    width: 350px;
+                    height: 350px;
+                    border-radius: 50%;
+                    filter: blur(110px);
+                    opacity: .2;
+                    pointer-events: none;
+                }
+
+                .signup-glow-one {
+                    top: 20%;
+                    left: -200px;
+                    background: #7c3aed;
+                }
+
+                .signup-glow-two {
+                    right: -200px;
+                    bottom: 5%;
+                    background: #4f46e5;
+                }
+
+                /* Promotional heading */
+                .signup-intro {
+                    position: relative;
+                    z-index: 1;
+                    max-width: 650px;
+                    margin-top: clamp(45px,8vh,90px);
+                }
+
+                .signup-eyebrow {
                     display: inline-flex;
                     align-items: center;
                     gap: 9px;
-                    padding: 9px 13px;
-                    border: 1px solid rgba(167,139,250,0.2);
+                    padding: 10px 14px;
+                    border: 1px solid rgba(167,139,250,.25);
                     border-radius: 30px;
-                    background: rgba(139,92,246,0.1);
+                    background: rgba(139,92,246,.1);
                     color: #c4b5fd;
                     font-size: 9px;
                     font-weight: 800;
-                    letter-spacing: 1.3px;
+                    letter-spacing: 1.4px;
                 }
 
-                .badge-dot {
-                    width: 7px;
-                    height: 7px;
+                .online-indicator {
+                    width: 8px;
+                    height: 8px;
                     border-radius: 50%;
                     background: #34d399;
                     box-shadow: 0 0 10px #34d399;
                 }
 
-                .welcome-content h1 {
-                    margin-top: 24px;
-                    color: white;
-                    font-size: clamp(38px, 4.3vw, 59px);
+                .signup-intro h1 {
+                    max-width: 590px;
+                    margin: 25px 0 18px;
+                    color: #fff;
+                    font-size: clamp(34px,3.6vw,54px);
                     font-weight: 850;
-                    line-height: 1.13;
-                    letter-spacing: -2.8px;
+                    line-height: 1.12;
+                    letter-spacing: -2px;
                 }
 
-                .welcome-content h1 span {
+                .signup-intro h1 span {
                     display: block;
-                    color: #a78bfa;
+                    background: linear-gradient(100deg,#a78bfa,#60a5fa);
+                    background-clip: text;
+                    -webkit-background-clip: text;
+                    color: transparent;
                 }
 
-                .welcome-description {
-                    max-width: 480px;
-                    margin-top: 20px;
-                    color: #a5abc2;
+                .signup-intro > p {
+                    max-width: 550px;
+                    margin: 0;
+                    color: #a5b4cc;
                     font-size: 14px;
                     line-height: 1.9;
                 }
 
-                /* PLATFORM HIGHLIGHTS */
-
-                .platform-highlights {
+                /* Promotional benefits */
+                .signup-benefits {
                     display: flex;
                     flex-wrap: wrap;
-                    gap: 13px 22px;
-                    margin-top: 28px;
+                    gap: 20px;
+                    margin-top: 27px;
                 }
 
-                .highlight-item {
-                    display: flex;
+                .signup-benefits div {
+                    display: inline-flex;
                     align-items: center;
                     gap: 8px;
-                    color: #cbd5e1;
+                    color: #dbe4f4;
                     font-size: 11px;
-                    font-weight: 600;
+                    font-weight: 650;
                 }
 
-                .highlight-icon {
+                .signup-benefits span {
                     color: #a78bfa;
-                    font-size: 17px;
+                    font-size: 18px;
                 }
 
-                /* AI MENTOR SLIDESHOW */
-
-                .mentor-wrapper {
-                    width: 100%;
+                /* AI Mentor container */
+                .signup-mentor-wrapper {
+                    position: relative;
+                    z-index: 1;
                     display: flex;
                     justify-content: center;
-                    margin: 12px auto;
-                }
-
-                .mentor-wrapper :global(.mentor-slideshow) {
                     width: 100%;
-                    max-width: 440px;
-                    margin: 0 auto;
+                    max-width: 480px;
+                    margin: auto auto 15px;
                 }
 
-                .mentor-wrapper :global(.mentor-character) {
-                    height: 190px;
-                }
-
-                .mentor-wrapper :global(.mentor-character img) {
-                    width: 180px;
-                    height: 180px;
-                }
-
-                /* FOOTER */
-
-                .welcome-footer {
+                /* Footer */
+                .signup-left-footer {
+                    position: relative;
+                    z-index: 2;
                     display: flex;
                     justify-content: space-between;
-                    gap: 15px;
-                    padding-top: 20px;
-                    border-top: 1px solid rgba(255,255,255,0.08);
-                    color: #777f9b;
+                    gap: 12px;
+                    padding-top: 17px;
+                    border-top: 1px solid rgba(255,255,255,.09);
+                    color: #8995b0;
                     font-size: 10px;
                 }
 
-                /* RIGHT FORM SECTION */
-
-                .form-section {
-                    min-height: 100vh;
+                /* Right form panel */
+                .signup-right {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    padding: 45px 9%;
-                    background:
-                        radial-gradient(
-                            circle at 90% 10%,
-                            rgba(99,102,241,0.09),
-                            transparent 35%
-                        ),
-                        #0b0e1c;
+                    min-width: 0;
+                    padding: 55px 8%;
+                    background: #090d1b;
                 }
 
-                .form-container {
+                .signup-form-container {
                     width: 100%;
-                    max-width: 410px;
+                    max-width: 460px;
                 }
 
-                .mobile-brand {
-                    display: none;
-                    margin-bottom: 40px;
-                }
-
+                /* Form heading */
                 .form-heading {
                     margin-bottom: 30px;
                 }
 
-                .form-eyebrow {
-                    margin-bottom: 12px;
+                .form-label {
                     color: #a78bfa;
-                    font-size: 10px;
+                    font-size: 9px;
                     font-weight: 800;
-                    letter-spacing: 2px;
+                    letter-spacing: 1.8px;
                 }
 
                 .form-heading h2 {
+                    margin: 13px 0 8px;
                     color: #f8fafc;
-                    font-size: 31px;
-                    font-weight: 800;
-                    letter-spacing: -1.2px;
+                    font-size: clamp(27px,3vw,36px);
+                    font-weight: 850;
+                    letter-spacing: -1px;
                 }
 
                 .form-heading p {
-                    margin-top: 9px;
-                    color: #929bb3;
+                    margin: 0;
+                    color: #91a0bb;
                     font-size: 13px;
+                    line-height: 1.7;
                 }
 
-                /* ERROR MESSAGE */
-
-                .error-message {
+                /* Form structure */
+                .signup-form {
                     display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    margin-bottom: 18px;
-                    padding: 12px 14px;
-                    border: 1px solid rgba(248,113,113,0.25);
-                    border-radius: 10px;
-                    background: rgba(239,68,68,0.08);
-                    color: #fca5a5;
-                    font-size: 12px;
+                    flex-direction: column;
+                    gap: 17px;
                 }
-
-                .error-message span {
-                    width: 19px;
-                    height: 19px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 50%;
-                    background: rgba(239,68,68,0.2);
-                    font-weight: 800;
-                }
-
-                /* FORM INPUTS */
 
                 .form-group {
-                    margin-bottom: 18px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 9px;
                 }
 
                 .form-group label {
-                    display: block;
-                    margin-bottom: 9px;
-                    color: #dbe2f0;
-                    font-size: 12px;
-                    font-weight: 650;
+                    color: #e2e8f0;
+                    font-size: 11px;
+                    font-weight: 750;
                 }
 
+                /* Input fields */
                 .input-wrapper {
-                    height: 49px;
                     display: flex;
                     align-items: center;
-                    gap: 11px;
+                    min-height: 52px;
                     padding: 0 14px;
-                    border: 1px solid #252b43;
+                    border: 1px solid #27324b;
                     border-radius: 10px;
-                    background: #111629;
-                    transition: border-color 0.25s, box-shadow 0.25s;
+                    background: #11182b;
+                    transition: border-color .2s,box-shadow .2s;
                 }
 
                 .input-wrapper:focus-within {
                     border-color: #8b5cf6;
-                    box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
+                    box-shadow: 0 0 0 3px rgba(139,92,246,.12);
                 }
 
                 .input-icon {
-                    color: #929bb3;
-                    font-size: 17px;
+                    flex-shrink: 0;
+                    margin-right: 12px;
+                    color: #94a3b8;
+                    font-size: 16px;
                 }
 
                 .input-wrapper input {
                     width: 100%;
                     min-width: 0;
-                    height: 100%;
+                    height: 49px;
                     border: none;
                     outline: none;
                     background: transparent;
-                    color: white;
+                    color: #f8fafc;
                     font-size: 12px;
                 }
 
                 .input-wrapper input::placeholder {
-                    color: #66708a;
+                    color: #71809e;
                 }
 
+                .input-wrapper input:disabled {
+                    opacity: .6;
+                }
+
+                /* Password visibility buttons */
                 .password-toggle {
-                    border: none;
+                    flex-shrink: 0;
+                    padding: 7px;
+                    border: 0;
                     background: transparent;
                     color: #a78bfa;
                     font-size: 10px;
-                    font-weight: 700;
+                    font-weight: 750;
                     cursor: pointer;
                 }
 
-                /* CREATE ACCOUNT BUTTON */
+                .password-toggle:hover {
+                    color: #ddd6fe;
+                }
 
-                .signup-button {
-                    width: 100%;
-                    height: 51px;
+                .field-hint {
+                    color: #71809e;
+                    font-size: 9px;
+                }
+
+                /* Error message */
+                .signup-error {
+                    display: flex;
+                    align-items: center;
+                    gap: 9px;
+                    padding: 12px;
+                    border: 1px solid rgba(248,113,113,.25);
+                    border-radius: 9px;
+                    background: rgba(127,29,29,.15);
+                    color: #fca5a5;
+                    font-size: 11px;
+                    line-height: 1.5;
+                }
+
+                .signup-error span {
+                    display: grid;
+                    flex-shrink: 0;
+                    width: 19px;
+                    height: 19px;
+                    place-items: center;
+                    border-radius: 50%;
+                    background: rgba(248,113,113,.18);
+                    font-weight: 800;
+                }
+
+                /* Main signup button */
+                .signup-submit {
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     gap: 12px;
-                    margin-top: 8px;
-                    border: none;
+                    width: 100%;
+                    min-height: 52px;
+                    margin-top: 2px;
+                    border: 0;
                     border-radius: 10px;
-                    background: linear-gradient(
-                        110deg,
-                        #7c3aed,
-                        #6366f1
-                    );
-                    color: white;
-                    font-size: 13px;
-                    font-weight: 750;
+                    background: linear-gradient(105deg,#7c3aed,#5b5ce2);
+                    color: #fff;
+                    font-size: 12px;
+                    font-weight: 800;
                     cursor: pointer;
-                    box-shadow: 0 8px 25px rgba(99,102,241,0.2);
-                    transition: transform 0.2s, box-shadow 0.2s;
+                    box-shadow: 0 10px 25px rgba(99,102,241,.18);
+                    transition: transform .2s,box-shadow .2s;
                 }
 
-                .signup-button:hover:not(:disabled) {
+                .signup-submit:hover:not(:disabled) {
                     transform: translateY(-2px);
-                    box-shadow: 0 12px 30px rgba(99,102,241,0.35);
+                    box-shadow: 0 13px 30px rgba(99,102,241,.3);
                 }
 
-                .signup-button:disabled {
-                    opacity: 0.65;
+                .signup-submit:disabled {
+                    opacity: .65;
                     cursor: not-allowed;
-                }
-
-                .signup-button span {
-                    font-size: 18px;
                 }
 
                 .button-spinner {
                     width: 15px;
                     height: 15px;
-                    border: 2px solid rgba(255,255,255,0.35);
+                    border: 2px solid rgba(255,255,255,.35);
                     border-top-color: white;
                     border-radius: 50%;
-                    animation: spin 0.7s linear infinite;
+                    animation: spin .7s linear infinite;
                 }
 
                 @keyframes spin {
-                    to {
-                        transform: rotate(360deg);
-                    }
+                    to { transform: rotate(360deg); }
                 }
 
-                /* DIVIDER */
-
-                .form-divider {
+                /* Social login divider */
+                .social-divider {
                     display: flex;
                     align-items: center;
                     gap: 13px;
-                    margin: 27px 0 20px;
+                    margin: 25px 0 19px;
                 }
 
-                .form-divider span {
+                .social-divider span {
                     flex: 1;
                     height: 1px;
-                    background: #252b43;
+                    background: #29334b;
                 }
 
-                .form-divider p {
-                    color: #78819a;
+                .social-divider p {
+                    margin: 0;
+                    color: #8290a9;
                     font-size: 9px;
                     font-weight: 750;
-                    letter-spacing: 1px;
+                    letter-spacing: 1.3px;
                     white-space: nowrap;
                 }
 
-                /* SOCIAL BUTTONS */
-
+                /* Social login buttons */
                 .social-buttons {
                     display: grid;
                     grid-template-columns: 1fr 1fr;
@@ -929,234 +966,171 @@ export default function SignupPage() {
                 }
 
                 .social-button {
-                    height: 47px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     gap: 10px;
-                    border: 1px solid #292f47;
+                    min-height: 49px;
+                    border: 1px solid #29334b;
                     border-radius: 10px;
-                    background: #111629;
+                    background: #11182b;
                     color: #e2e8f0;
-                    font-size: 12px;
-                    font-weight: 650;
+                    font-size: 11px;
+                    font-weight: 750;
                     cursor: pointer;
-                    transition: background 0.2s, border-color 0.2s;
+                    transition: border-color .2s,background .2s;
                 }
 
                 .social-button:hover:not(:disabled) {
                     border-color: #8b5cf6;
-                    background: #191d35;
+                    background: #171b35;
                 }
 
                 .social-button:disabled {
-                    opacity: 0.55;
+                    opacity: .6;
                     cursor: not-allowed;
                 }
 
                 .google-icon {
                     color: #60a5fa;
                     font-size: 19px;
-                    font-weight: 850;
+                    font-weight: 900;
                 }
 
-                /* LOGIN AND TERMS */
-
+                /* Login prompt */
                 .login-prompt {
-                    margin-top: 27px;
-                    color: #929bb3;
-                    text-align: center;
-                    font-size: 12px;
+                    display: flex;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                    gap: 5px;
+                    margin-top: 26px;
+                    color: #94a3b8;
+                    font-size: 11px;
                 }
 
                 .login-prompt a {
-                    margin-left: 5px;
                     color: #a78bfa;
                     font-weight: 750;
                     text-decoration: none;
                 }
 
-                .login-prompt a:hover,
-                .terms-text a:hover {
-                    text-decoration: underline;
+                .login-prompt a:hover {
+                    color: #c4b5fd;
                 }
 
-                .terms-text {
-                    margin-top: 24px;
-                    color: #68728a;
-                    text-align: center;
-                    font-size: 10px;
+                /* Terms and privacy */
+                .signup-terms {
+                    margin: 25px 0 0;
+                    color: #64748b;
+                    font-size: 9px;
                     line-height: 1.8;
+                    text-align: center;
                 }
 
-                .terms-text a {
-                    color: #a78bfa;
+                .signup-terms a {
+                    color: #9ba8c1;
                     text-decoration: none;
                 }
 
-                /* RESPONSIVE DESIGN */
+                .signup-terms a:hover {
+                    color: #c4b5fd;
+                }
 
-                @media (max-width: 1100px) {
+                /* Tablet layout */
+                @media (max-width: 1050px) {
 
                     .signup-page {
-                        grid-template-columns: 1fr 0.95fr;
+                        grid-template-columns: minmax(0,1fr) minmax(0,1fr);
                     }
 
-                    .welcome-section {
-                        padding-left: 6%;
+                    .signup-left {
+                        padding-right: 5%;
+                        padding-left: 5%;
+                    }
+
+                    .signup-right {
                         padding-right: 6%;
+                        padding-left: 6%;
                     }
 
-                    .welcome-content h1 {
-                        font-size: 43px;
-                    }
-
-                    .form-section {
-                        padding-left: 7%;
-                        padding-right: 7%;
+                    .signup-benefits {
+                        gap: 12px;
                     }
 
                 }
 
-                @media (max-width: 900px) {
+                /* Mobile layout */
+                @media (max-width: 760px) {
 
                     .signup-page {
                         grid-template-columns: 1fr;
                     }
 
-                    .welcome-section {
+                    .signup-left {
                         min-height: auto;
-                        padding: 30px 7% 20px;
+                        padding: 24px 6% 15px;
                     }
 
-                    .welcome-content {
-                        margin-top: 55px;
+                    .signup-intro {
+                        margin-top: 48px;
                     }
 
-                    .welcome-content h1 {
-                        font-size: 46px;
+                    .signup-intro h1 {
+                        font-size: clamp(34px,8vw,48px);
                     }
 
-                    .mentor-wrapper {
-                        margin-top: 20px;
+                    .signup-mentor-wrapper {
+                        margin-top: 25px;
                     }
 
-                    .form-section {
-                        min-height: auto;
-                        padding: 65px 8%;
+                    .signup-left-footer {
+                        margin-top: 10px;
                     }
 
-                    .welcome-footer {
-                        margin-top: 20px;
+                    .signup-right {
+                        padding: 55px 7%;
+                    }
+
+                    .signup-form-container {
+                        max-width: 500px;
                     }
 
                 }
 
-                @media (max-width: 520px) {
+                /* Small mobile devices */
+                @media (max-width: 420px) {
 
-                    .welcome-section {
-                        padding: 25px 22px 18px;
+                    .signup-benefits {
+                        flex-direction: column;
+                        gap: 10px;
                     }
 
-                    .welcome-content {
-                        margin-top: 43px;
+                    .signup-left-footer {
+                        flex-direction: column;
+                        align-items: center;
                     }
-
-                    .welcome-content h1 {
-                        font-size: 37px;
-                        letter-spacing: -1.8px;
-                    }
-
-                    .welcome-description {
-                        font-size: 12px;
-                    }
-
-                    .platform-highlights {
-                        gap: 12px;
-                    }
-
-                    .highlight-item {
-                        font-size: 10px;
-                    }
-
-                    .form-section {
-                        padding: 45px 22px;
-                    }
-
-                    .mobile-brand {
-                        display: inline-flex;
-                    }
-
-                    .form-heading h2 {
-                        font-size: 27px;
-                    }
-
-                    .welcome-footer {
-                        font-size: 9px;
-                    }
-
-                }
-
-                @media (max-width: 360px) {
 
                     .social-buttons {
                         grid-template-columns: 1fr;
                     }
 
-                    .welcome-content h1 {
-                        font-size: 32px;
+                    .signup-right {
+                        padding: 45px 6%;
                     }
 
                 }
 
-                /* Short desktop screens */
-
-                @media (min-width: 901px) and (max-height: 760px) {
-
-                    .welcome-section {
-                        padding-top: 25px;
-                        padding-bottom: 20px;
-                    }
-
-                    .welcome-content {
-                        margin-top: 35px;
-                    }
-
-                    .welcome-content h1 {
-                        font-size: 40px;
-                    }
-
-                    .mentor-wrapper :global(.mentor-character) {
-                        height: 145px;
-                    }
-
-                    .mentor-wrapper :global(.mentor-character img) {
-                        width: 140px;
-                        height: 140px;
-                    }
-
-                    .form-section {
-                        padding-top: 25px;
-                        padding-bottom: 25px;
-                    }
-
-                    .form-group {
-                        margin-bottom: 13px;
-                    }
-
-                }
-
-                /* Accessibility: reduce motion when requested */
-
+                /* Reduced motion accessibility */
                 @media (prefers-reduced-motion: reduce) {
 
-                    *,
-                    *::before,
-                    *::after {
-                        animation-duration: 0.01ms !important;
-                        animation-iteration-count: 1 !important;
-                        scroll-behavior: auto !important;
-                        transition-duration: 0.01ms !important;
+                    .signup-submit,
+                    .input-wrapper,
+                    .social-button {
+                        transition: none;
+                    }
+
+                    .button-spinner {
+                        animation: none;
                     }
 
                 }
