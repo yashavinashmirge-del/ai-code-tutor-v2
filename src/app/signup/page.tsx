@@ -5,33 +5,41 @@
 // File Name    : page.tsx
 // Module       : User Registration
 //
-// Description  : Provides the signup interface for new
-//                CodeTutor users.
+// Description  : Provides a complete signup interface
+//                for new CodeTutor users.
 //
 // Main Features:
-//                1. User registration with email/password
+//                1. Email and password registration
 //                2. Google authentication
 //                3. GitHub authentication
 //                4. Password visibility controls
 //                5. Password confirmation validation
-//                6. Animated AI Mentor slideshow
-//                7. Responsive registration layout
+//                6. Input validation and error handling
+//                7. Animated AI Mentor slideshow
+//                8. Responsive registration layout
+//                9. Loading states and accessibility
 //
 ////////////////////////////////////////////////////////////
 
 "use client";
 
+// React hooks and event types.
 import { useState, type FormEvent } from "react";
+
+// Next.js navigation component.
 import Link from "next/link";
 
+// AI Mentor slideshow component.
 import AIMentorSlideshow from "@/components/AIMentorSlideshow";
+
+// Better Auth frontend client.
 import { authClient } from "@/lib/auth-client";
 
 export default function SignupPage() {
 
     // =====================================================
-    // SECTION 1: FORM STATE
-    // Stores the values entered by the user.
+    // SECTION 1: FORM STATE MANAGEMENT
+    // Stores user input and controls the signup interface.
     // =====================================================
 
     const [name, setName] = useState("");
@@ -39,32 +47,53 @@ export default function SignupPage() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    // Controls password visibility independently.
+    // Controls password visibility.
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // Tracks form submission and error messages.
+    // Tracks form submission and authentication errors.
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     // =====================================================
-    // SECTION 2: EMAIL SIGNUP
-    // Registers a new user using Better Auth.
+    // SECTION 2: EMAIL SIGNUP HANDLER
+    // Validates user input and registers the user through
+    // Better Auth using email and password.
     // =====================================================
 
-    const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
+    const handleSignup = async (
+        event: FormEvent<HTMLFormElement>
+    ) => {
 
+        // Prevent the default browser form submission.
         event.preventDefault();
 
+        // Clear any previous error.
         setError("");
 
-        // Validate that both password fields match.
+        // Clean user input before sending it to the server.
+        const cleanName = name.trim();
+        const cleanEmail = email.trim().toLowerCase();
+
+        // Validate the user's name.
+        if (cleanName.length < 2) {
+            setError("Please enter a valid name.");
+            return;
+        }
+
+        // Validate email input.
+        if (!cleanEmail) {
+            setError("Please enter your email address.");
+            return;
+        }
+
+        // Check whether both password fields match.
         if (password !== confirmPassword) {
             setError("Passwords do not match.");
             return;
         }
 
-        // Require a minimum password length.
+        // Enforce the minimum password length.
         if (password.length < 8) {
             setError("Password must contain at least 8 characters.");
             return;
@@ -72,35 +101,47 @@ export default function SignupPage() {
 
         try {
 
+            // Activate the loading state.
             setLoading(true);
 
             // Send registration details to Better Auth.
             const result = await authClient.signUp.email({
-                name,
-                email,
+                name: cleanName,
+                email: cleanEmail,
                 password,
                 callbackURL: "/dashboard",
             });
 
-            // Display authentication errors.
+            // Display an authentication error if returned.
             if (result.error) {
-                setError(result.error.message || "Unable to create your account.");
+                setError(
+                    result.error.message ||
+                    "Unable to create your account."
+                );
             }
 
-        } catch {
+            // Better Auth handles successful navigation
+            // through the configured callback URL.
 
+        } catch (signupError) {
+
+            // Log the technical error for debugging.
+            console.error("Signup error:", signupError);
+
+            // Show a user-friendly error.
             setError("Something went wrong. Please try again.");
 
         } finally {
 
+            // Stop the loading state after the request.
             setLoading(false);
 
         }
     };
 
     // =====================================================
-    // SECTION 3: SOCIAL SIGNUP
-    // Supports Google and GitHub authentication.
+    // SECTION 3: SOCIAL SIGNUP HANDLER
+    // Starts Google or GitHub OAuth authentication.
     // =====================================================
 
     const handleSocialSignup = async (
@@ -109,16 +150,38 @@ export default function SignupPage() {
 
         try {
 
+            // Clear previous error messages.
             setError("");
+
+            // Activate the loading state.
             setLoading(true);
 
-            await authClient.signIn.social({
+            // Start the selected social authentication.
+            const result = await authClient.signIn.social({
                 provider,
                 callbackURL: "/dashboard",
             });
 
-        } catch {
+            // Handle errors returned by Better Auth.
+            if (result.error) {
 
+                setError(
+                    result.error.message ||
+                    `Unable to continue with ${provider}.`
+                );
+
+                setLoading(false);
+            }
+
+            // On successful OAuth initiation, the browser
+            // is redirected to the provider's login page.
+
+        } catch (socialError) {
+
+            // Log the error for debugging.
+            console.error(`${provider} signup error:`, socialError);
+
+            // Display a friendly error message.
             setError(
                 `Unable to continue with ${provider}. Please try again.`
             );
@@ -129,11 +192,12 @@ export default function SignupPage() {
     };
 
     // =====================================================
-    // SECTION 4: PAGE UI
-    // Displays the promotional panel and signup form.
+    // SECTION 4: PAGE USER INTERFACE
+    // Displays the promotional panel and registration form.
     // =====================================================
 
     return (
+
         <main className="signup-page">
 
             {/* =============================================
@@ -142,7 +206,7 @@ export default function SignupPage() {
 
             <section className="signup-left">
 
-                {/* Brand header */}
+                {/* Brand logo and homepage navigation. */}
                 <Link href="/" className="signup-brand">
 
                     <span className="signup-brand-icon">
@@ -156,13 +220,11 @@ export default function SignupPage() {
 
                 </Link>
 
-
-                {/* Decorative background effects */}
+                {/* Decorative background glow effects. */}
                 <div className="signup-glow signup-glow-one" />
                 <div className="signup-glow signup-glow-two" />
 
-
-                {/* Promotional introduction */}
+                {/* Promotional introduction. */}
                 <div className="signup-intro">
 
                     <div className="signup-eyebrow">
@@ -172,7 +234,7 @@ export default function SignupPage() {
 
                     <h1>
                         Don't just write code.
-                        <span> Understand it.</span>
+                        <span>Understand it.</span>
                     </h1>
 
                     <p>
@@ -181,7 +243,7 @@ export default function SignupPage() {
                         your personal AI coding tutor.
                     </p>
 
-                    {/* Main platform benefits */}
+                    {/* Main platform benefits. */}
                     <div className="signup-benefits">
 
                         <div>
@@ -203,20 +265,15 @@ export default function SignupPage() {
 
                 </div>
 
-
-                {/* AI Mentor slideshow */}
+                {/* Animated AI Mentor slideshow. */}
                 <div className="signup-mentor-wrapper">
-
                     <AIMentorSlideshow />
-
                 </div>
 
-
-                {/* Left panel footer */}
+                {/* Promotional panel footer. */}
                 <div className="signup-left-footer">
 
                     <span>© 2026 CodeTutor</span>
-
                     <span>Learn. Build. Understand.</span>
 
                 </div>
@@ -232,7 +289,7 @@ export default function SignupPage() {
 
                 <div className="signup-form-container">
 
-                    {/* Form heading */}
+                    {/* Registration heading. */}
                     <div className="form-heading">
 
                         <span className="form-label">
@@ -248,13 +305,17 @@ export default function SignupPage() {
                     </div>
 
 
-                    {/* Registration form */}
+                    {/* =====================================
+                        EMAIL AND PASSWORD REGISTRATION
+                    ===================================== */}
+
                     <form
                         className="signup-form"
                         onSubmit={handleSignup}
+                        noValidate
                     >
 
-                        {/* Full name field */}
+                        {/* Full name input. */}
                         <div className="form-group">
 
                             <label htmlFor="signup-name">
@@ -263,7 +324,7 @@ export default function SignupPage() {
 
                             <div className="input-wrapper">
 
-                                <span className="input-icon">
+                                <span className="input-icon" aria-hidden="true">
                                     ♙
                                 </span>
 
@@ -278,6 +339,7 @@ export default function SignupPage() {
                                     autoComplete="name"
                                     required
                                     disabled={loading}
+                                    minLength={2}
                                 />
 
                             </div>
@@ -285,7 +347,7 @@ export default function SignupPage() {
                         </div>
 
 
-                        {/* Email field */}
+                        {/* Email address input. */}
                         <div className="form-group">
 
                             <label htmlFor="signup-email">
@@ -294,7 +356,7 @@ export default function SignupPage() {
 
                             <div className="input-wrapper">
 
-                                <span className="input-icon">
+                                <span className="input-icon" aria-hidden="true">
                                     ✉
                                 </span>
 
@@ -316,7 +378,7 @@ export default function SignupPage() {
                         </div>
 
 
-                        {/* Password field */}
+                        {/* Password input with visibility control. */}
                         <div className="form-group">
 
                             <label htmlFor="signup-password">
@@ -325,7 +387,7 @@ export default function SignupPage() {
 
                             <div className="input-wrapper">
 
-                                <span className="input-icon">
+                                <span className="input-icon" aria-hidden="true">
                                     ♧
                                 </span>
 
@@ -347,8 +409,9 @@ export default function SignupPage() {
                                     type="button"
                                     className="password-toggle"
                                     onClick={() =>
-                                        setShowPassword(!showPassword)
+                                        setShowPassword((current) => !current)
                                     }
+                                    disabled={loading}
                                     aria-label={
                                         showPassword
                                             ? "Hide password"
@@ -367,7 +430,7 @@ export default function SignupPage() {
                         </div>
 
 
-                        {/* Confirm password field */}
+                        {/* Confirm password input. */}
                         <div className="form-group">
 
                             <label htmlFor="signup-confirm-password">
@@ -376,7 +439,7 @@ export default function SignupPage() {
 
                             <div className="input-wrapper">
 
-                                <span className="input-icon">
+                                <span className="input-icon" aria-hidden="true">
                                     ♧
                                 </span>
 
@@ -402,9 +465,10 @@ export default function SignupPage() {
                                     className="password-toggle"
                                     onClick={() =>
                                         setShowConfirmPassword(
-                                            !showConfirmPassword
+                                            (current) => !current
                                         )
                                     }
+                                    disabled={loading}
                                     aria-label={
                                         showConfirmPassword
                                             ? "Hide confirm password"
@@ -419,10 +483,14 @@ export default function SignupPage() {
                         </div>
 
 
-                        {/* Authentication error message */}
+                        {/* Display authentication and validation errors. */}
                         {error && (
 
-                            <div className="signup-error" role="alert">
+                            <div
+                                className="signup-error"
+                                role="alert"
+                                aria-live="polite"
+                            >
                                 <span>!</span>
                                 {error}
                             </div>
@@ -430,7 +498,7 @@ export default function SignupPage() {
                         )}
 
 
-                        {/* Create account button */}
+                        {/* Main registration button. */}
                         <button
                             type="submit"
                             className="signup-submit"
@@ -454,29 +522,30 @@ export default function SignupPage() {
                     </form>
 
 
-                    {/* Social authentication separator */}
+                    {/* =====================================
+                        SOCIAL AUTHENTICATION
+                    ===================================== */}
+
                     <div className="social-divider">
                         <span />
                         <p>OR CONTINUE WITH</p>
                         <span />
                     </div>
 
-
-                    {/* Google and GitHub signup */}
                     <div className="social-buttons">
 
+                        {/* Google signup button. */}
                         <button
                             type="button"
                             className="social-button"
                             onClick={() => handleSocialSignup("google")}
                             disabled={loading}
                         >
-
                             <span className="google-icon">G</span>
                             Google
-
                         </button>
 
+                        {/* GitHub signup button. */}
                         <button
                             type="button"
                             className="social-button"
@@ -501,7 +570,7 @@ export default function SignupPage() {
                     </div>
 
 
-                    {/* Existing account navigation */}
+                    {/* Navigation to the login page. */}
                     <div className="login-prompt">
 
                         Already have an account?
@@ -513,12 +582,10 @@ export default function SignupPage() {
                     </div>
 
 
-                    {/* Terms and privacy information */}
+                    {/* Terms and privacy information. */}
                     <p className="signup-terms">
 
-                        By creating an account, you agree to our
-
-                        {" "}
+                        By creating an account, you agree to our{" "}
 
                         <Link href="/terms">
                             Terms of Service
@@ -538,14 +605,14 @@ export default function SignupPage() {
 
 
             {/* =============================================
-                PAGE STYLES
-                Controls the two-column layout, mentor panel,
-                registration form, buttons and responsiveness.
+                SECTION 5: PAGE STYLING
+                Defines the two-column layout, form design,
+                colors, buttons, animations and responsiveness.
             ============================================= */}
 
             <style jsx>{`
 
-                /* Main page layout */
+                /* Main page layout. */
                 .signup-page {
                     display: grid;
                     grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
@@ -554,7 +621,7 @@ export default function SignupPage() {
                     color: #f8fafc;
                 }
 
-                /* Left promotional panel */
+                /* Left promotional panel. */
                 .signup-left {
                     position: relative;
                     display: flex;
@@ -565,16 +632,12 @@ export default function SignupPage() {
                     padding: 30px 7% 20px;
                     border-right: 1px solid rgba(255,255,255,.06);
                     background:
-                        radial-gradient(
-                            circle at 15% 20%,
-                            rgba(91,49,174,.25),
-                            transparent 45%
-                        ),
+                        radial-gradient(circle at 15% 20%, rgba(91,49,174,.25), transparent 45%),
                         linear-gradient(145deg,#17132f,#10132a 75%,#15123a);
                     isolation: isolate;
                 }
 
-                /* Brand */
+                /* Brand logo. */
                 .signup-brand {
                     position: relative;
                     z-index: 2;
@@ -616,7 +679,7 @@ export default function SignupPage() {
                     font-size: 10px;
                 }
 
-                /* Decorative glow effects */
+                /* Decorative background glows. */
                 .signup-glow {
                     position: absolute;
                     z-index: -1;
@@ -640,7 +703,7 @@ export default function SignupPage() {
                     background: #4f46e5;
                 }
 
-                /* Promotional heading */
+                /* Promotional introduction. */
                 .signup-intro {
                     position: relative;
                     z-index: 1;
@@ -696,7 +759,7 @@ export default function SignupPage() {
                     line-height: 1.9;
                 }
 
-                /* Promotional benefits */
+                /* Platform benefit list. */
                 .signup-benefits {
                     display: flex;
                     flex-wrap: wrap;
@@ -718,7 +781,7 @@ export default function SignupPage() {
                     font-size: 18px;
                 }
 
-                /* AI Mentor container */
+                /* AI Mentor slideshow container. */
                 .signup-mentor-wrapper {
                     position: relative;
                     z-index: 1;
@@ -729,7 +792,7 @@ export default function SignupPage() {
                     margin: auto auto 15px;
                 }
 
-                /* Footer */
+                /* Left panel footer. */
                 .signup-left-footer {
                     position: relative;
                     z-index: 2;
@@ -742,7 +805,7 @@ export default function SignupPage() {
                     font-size: 10px;
                 }
 
-                /* Right form panel */
+                /* Right registration panel. */
                 .signup-right {
                     display: flex;
                     align-items: center;
@@ -757,7 +820,7 @@ export default function SignupPage() {
                     max-width: 460px;
                 }
 
-                /* Form heading */
+                /* Form heading. */
                 .form-heading {
                     margin-bottom: 30px;
                 }
@@ -784,7 +847,7 @@ export default function SignupPage() {
                     line-height: 1.7;
                 }
 
-                /* Form structure */
+                /* Registration form layout. */
                 .signup-form {
                     display: flex;
                     flex-direction: column;
@@ -803,7 +866,7 @@ export default function SignupPage() {
                     font-weight: 750;
                 }
 
-                /* Input fields */
+                /* Input field containers. */
                 .input-wrapper {
                     display: flex;
                     align-items: center;
@@ -846,7 +909,7 @@ export default function SignupPage() {
                     opacity: .6;
                 }
 
-                /* Password visibility buttons */
+                /* Password visibility controls. */
                 .password-toggle {
                     flex-shrink: 0;
                     padding: 7px;
@@ -862,12 +925,17 @@ export default function SignupPage() {
                     color: #ddd6fe;
                 }
 
+                .password-toggle:disabled {
+                    cursor: not-allowed;
+                    opacity: .5;
+                }
+
                 .field-hint {
                     color: #71809e;
                     font-size: 9px;
                 }
 
-                /* Error message */
+                /* Authentication error message. */
                 .signup-error {
                     display: flex;
                     align-items: center;
@@ -892,7 +960,7 @@ export default function SignupPage() {
                     font-weight: 800;
                 }
 
-                /* Main signup button */
+                /* Main registration button. */
                 .signup-submit {
                     display: flex;
                     align-items: center;
@@ -922,6 +990,7 @@ export default function SignupPage() {
                     cursor: not-allowed;
                 }
 
+                /* Loading spinner. */
                 .button-spinner {
                     width: 15px;
                     height: 15px;
@@ -932,10 +1001,12 @@ export default function SignupPage() {
                 }
 
                 @keyframes spin {
-                    to { transform: rotate(360deg); }
+                    to {
+                        transform: rotate(360deg);
+                    }
                 }
 
-                /* Social login divider */
+                /* Social authentication separator. */
                 .social-divider {
                     display: flex;
                     align-items: center;
@@ -958,7 +1029,7 @@ export default function SignupPage() {
                     white-space: nowrap;
                 }
 
-                /* Social login buttons */
+                /* Google and GitHub buttons. */
                 .social-buttons {
                     display: grid;
                     grid-template-columns: 1fr 1fr;
@@ -997,7 +1068,7 @@ export default function SignupPage() {
                     font-weight: 900;
                 }
 
-                /* Login prompt */
+                /* Login page navigation. */
                 .login-prompt {
                     display: flex;
                     justify-content: center;
@@ -1018,7 +1089,7 @@ export default function SignupPage() {
                     color: #c4b5fd;
                 }
 
-                /* Terms and privacy */
+                /* Terms and privacy links. */
                 .signup-terms {
                     margin: 25px 0 0;
                     color: #64748b;
@@ -1036,7 +1107,7 @@ export default function SignupPage() {
                     color: #c4b5fd;
                 }
 
-                /* Tablet layout */
+                /* Tablet responsive layout. */
                 @media (max-width: 1050px) {
 
                     .signup-page {
@@ -1059,7 +1130,7 @@ export default function SignupPage() {
 
                 }
 
-                /* Mobile layout */
+                /* Mobile responsive layout. */
                 @media (max-width: 760px) {
 
                     .signup-page {
@@ -1097,7 +1168,7 @@ export default function SignupPage() {
 
                 }
 
-                /* Small mobile devices */
+                /* Small mobile devices. */
                 @media (max-width: 420px) {
 
                     .signup-benefits {
@@ -1120,7 +1191,7 @@ export default function SignupPage() {
 
                 }
 
-                /* Reduced motion accessibility */
+                /* Accessibility: respect reduced-motion settings. */
                 @media (prefers-reduced-motion: reduce) {
 
                     .signup-submit,

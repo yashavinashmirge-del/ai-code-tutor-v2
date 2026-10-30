@@ -9,9 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
     "better-auth": "^1.7.14",
     "better-sqlite3": "^13.0.3",
     "next": "16.4.3",
+    "openai": "^7.45.1",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
